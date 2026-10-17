@@ -1,0 +1,312 @@
+/* 
+ * Tailwind CSS Global Styles
+ * This file contains Tailwind CSS directives and custom styles
+ * CSS Linter warnings for @tailwind and @apply are expected and can be ignored
+ * These are valid Tailwind CSS directives that generate utility classes
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Tailwind CSS directives - these are valid and required */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables */
+:root {
+  --primary-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 50%, #8b5cf6 100%);
+}
+
+/* Hero Image Slider Animations - Sequential Slider */
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  5% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  95% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeOutScale {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+}
+
+/* Floating Animation for Background Elements */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(10px) rotate(-1deg);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-30px) rotate(2deg);
+  }
+}
+
+@keyframes floatFast {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-15px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(15px) rotate(1deg);
+  }
+}
+
+/* Hover Effects for Header Balance Button */
+@keyframes glowPulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(-10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rippleEffect {
+  0% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.hero-image-active {
+  animation: fadeInScale 1s ease-in-out forwards;
+}
+
+.hero-image-inactive {
+  animation: fadeOutScale 1s ease-in-out forwards;
+}
+
+/* Enhanced Glass Morphism */
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-navbar {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 1rem;
+}
+
+.hover-lift {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px);
+}
+
+/* Enhanced Shadows */
+.shadow-navbar {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+
+/* Text Gradients */
+.text-gradient-accent {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Smooth Transitions */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Enhanced Focus States */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+}
+
+/* Loading Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Enhanced Button States */
+.btn-primary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.btn-secondary {
+  @apply bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 hover:bg-white/20 hover:border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50 focus:ring-offset-2;
+}
+
+/* Image Hover Effects */
+.image-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-hover:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+/* Enhanced Card Animations */
+.card-animate {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-animate:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  .hero-title {
+    font-size: 3rem;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hero-title {
+    font-size: 5rem;
+    line-height: 1.1;
+  }
+}
+
+@media (min-width: 1025px) {
+  .hero-title {
+    font-size: 6rem;
+    line-height: 1.1;
+  }
+}
+
+/* Dark Mode Enhancements */
+@media (prefers-color-scheme: dark) {
+  .glass-morphism {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Mobile Hero Image Optimizations */
+@media (max-width: 768px) {
+  .hero-image-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
+  }
+  
+  .hero-image {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Ensure full coverage on mobile */
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+  }
+}

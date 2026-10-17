@@ -1,0 +1,9 @@
+{
+  "name": "travel-project-scripts",
+  "version": "1.0.0",
+  "description": "Скрипты для Travel Project",
+  "main": "index.js",
+  "scripts": {
+    "init-admin": "node init-admin.js"
+  }
+}

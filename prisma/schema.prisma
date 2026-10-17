@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String        @id @default(cuid())
+  email             String        @unique
+  name              String?
+  password          String?
+  image             String?
+  provider          String        @default("credentials")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  tokenExpiry       DateTime?
+  verificationToken String?
+  emailVerified     Boolean       @default(false)
+  accounts          Account[]
+  balance           Balance?
+  sessions          Session[]
+  transactions      Transaction[]
+  bookings         Booking[]
+  bonusPoints       BonusPoints?
+  cartItems         CartItem[]
+  tripPlans         TripPlan[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model merchant_id {
+  id          Int       @id @default(autoincrement())
+  merchant_id String    @unique @db.VarChar(255)
+  created_at  DateTime? @default(now()) @db.Timestamp(6)
+}
+
+model merchants {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  merchant_id               String    @unique @db.VarChar(50)
+  extraction_date           DateTime? @default(now()) @db.Timestamptz(6)
+  summary_data              Json?
+  merchant_profile_data     Json?
+  underwriting_results_data Json?
+  blade_review_data         Json?
+  metadata                  Json?
+  created_at                DateTime? @db.Timestamptz(6)
+  updated_at                DateTime? @db.Timestamptz(6)
+}
+
+model Balance {
+  id        String   @id @default(cuid())
+  amount    Float    @default(0)
+  currency  String   @default("USD")
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("balances")
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  amount      Float
+  currency    String   @default("USD")
+  type        String
+  status      String
+  userId      String
+  stripeId    String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  booking     Booking? @relation(fields: [bookingId], references: [id])
+  bookingId   String?
+
+  @@map("transactions")
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  userId        String
+  type          String   // "hotel" или "flight"
+  status        String   // "pending", "confirmed", "cancelled"
+  providerRef   String   // Референс в системе провайдера (отель/авиакомпания)
+  details       Json     // Детали бронирования (даты, номера, рейсы и т.д.)
+  totalAmount   Float
+  currency      String   @default("USD")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transaction   Transaction[]
+
+  @@map("bookings")
+}
+
+model BonusPoints {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  points    Int      @default(0)
+  totalEarned Int   @default(0)
+  totalSpent Int    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  history   BonusHistory[]
+
+  @@map("bonus_points")
+}
+
+model BonusHistory {
+  id          String   @id @default(cuid())
+  bonusPointsId String
+  points      Int
+  type        String   // "earned" или "spent"
+  reason      String   // Причина начисления/списания
+  source      String?  // Источник (booking_id, referral, etc.)
+  metadata    Json?    // Дополнительные данные
+  createdAt   DateTime @default(now())
+  bonusPoints BonusPoints @relation(fields: [bonusPointsId], references: [id], onDelete: Cascade)
+
+  @@map("bonus_history")
+}
+
+model BonusRule {
+  id          String   @id @default(cuid())
+  name        String   // Название правила
+  description String   // Описание правила
+  type        String   // Тип правила: "booking", "referral", "signup", "custom"
+  points      Int      // Количество баллов
+  multiplier  Float    @default(1.0) // Множитель (например, для сезонных акций)
+  conditions  Json?    // Условия применения (минимальная сумма, категория и т.д.)
+  isActive    Boolean  @default(true)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String   // ID админа, создавшего правило
+
+  @@map("bonus_rules")
+}
+
+model BonusSettings {
+  id                    String   @id @default(cuid())
+  key                   String   @unique // Ключ настройки
+  value                 String   // Значение настройки
+  description           String   // Описание настройки
+  category              String   // Категория настроек
+  isEditable            Boolean  @default(true)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  updatedBy             String?  // ID админа, изменившего настройку
+
+  @@map("bonus_settings")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("admin") // "admin", "super_admin"
+  permissions Json?  // Права доступа
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+model CartItem {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // "hotel" или "flight"
+  details     String   // Детали элемента корзины (JSON string)
+  price       Float
+  currency    String   @default("USD")
+  addedAt     DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cart_items")
+}
+
+model TripPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  destination String?
+  startDate   String?
+  endDate     String?
+  planData    String   // JSON данные плана поездки
+  status      String   @default("active") // "active", "completed", "cancelled"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("trip_plans")
+}
